@@ -10,6 +10,19 @@ A **version control system for music projects**, inspired by Git, designed to ma
 - **Commit history:** Each commit is timestamped, hash-verified, and includes notes.
 - **Branches:** Create branches for different versions or mixes of songs.
 - **Merging:** Merge branches similar to `git merge`.
+  
+### Command Line Interface (CLI)
+
+All version control operations such as commits, pushes, pulls, branching, and merging are performed through a dedicated Command Line Interface (CLI). This allows:
+
+- Precise control over your project’s version history
+- Automation and scripting capabilities for advanced workflows
+- Seamless integration with local music software and tools via CLI commands
+
+The upcoming local app will integrate with this CLI to automate syncing changes between your music software and the versioning system.
+
+---
+
 
 ### Diffing
 - Visualize changes between commits, e.g.:
