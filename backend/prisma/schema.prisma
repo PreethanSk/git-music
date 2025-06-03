@@ -17,12 +17,24 @@ datasource db {
 
 model User {
   id String @id @default(uuid())
+
   email String @unique
   username String @unique
   name String?
   password String
+
   projects Project[] @relation("UserProjects")
   collaborations Collaborator[]
+
+  bio String?
+  pfpUrl String?
+
+  lastLogin DateTime?
+  loginMethod LoginMethod?
+
+  plan Plan @default(FREE)
+  
+  isActive Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -74,4 +86,15 @@ enum CollaboratorRole{
   READ
   WRITE
   ADMIN
+}
+enum Plan{
+  FREE
+  PRO
+  TEAM
+}
+enum LoginMethod{
+  PASSWORD
+  GOOGLE
+  APPLE
+  GITHUB
 }
