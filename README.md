@@ -1,23 +1,67 @@
-What it does
+# Music Versioning System
 
-    versioning system just like git -> each commit is timestamped, hash-verified, contains notes
-    -branches -> allow branches for different versions/mixes of the songs
-    -merging  -> just like git merge
+A **version control system for music projects**, inspired by Git, designed to manage, collaborate, and track changes in music production seamlessly.
 
-    diffing -> we can see whats changed with each commits (like file x added, tempo changed from 120 to 125 )
+---
 
-    commit history -> who changed what, what has changed, commit notes, timestamp
+## Features
 
-    collaboration -> invite others to the project, roles like owner, viewer, editor
+### Versioning System (Git-like)
+- **Commit history:** Each commit is timestamped, hash-verified, and includes notes.
+- **Branches:** Create branches for different versions or mixes of songs.
+- **Merging:** Merge branches similar to `git merge`.
 
-    remote and local workflow -> web UI, upcoming local app to auto pull and push commits to local music software, one click commit from the music software itself
+### Diffing
+- Visualize changes between commits, e.g.:
+  - File additions or deletions
+  - Tempo changes (e.g., from 120 BPM to 125 BPM)
 
-    Access control -> private and public projects, shareable links to specific verisons
+### Commit History
+- Detailed log of who changed what.
+- Shows commit notes and timestamps.
 
-    Rollback and compare -> restore any previous commits, compare 2 commits (audio playback A/B, file change summary, Metadata(tempo, length etc)
+### Collaboration
+- Invite collaborators with roles:
+  - Owner
+  - Editor
+  - Viewer
 
-    Project packaging -> treat project like a git repo -> /projectName -/stems,/exports,/projectFile,/readme.txt
-    -Activity feed and timeline -> git style feed
-    -DAW integeration -> (later) create plugins for music softwares which allows commits or branch switching
+### Remote and Local Workflow
+- **Web UI:** Manage projects from the browser.
+- **Local app (upcoming):** Automatically pull and push commits to local music software.
+- One-click commits directly from within supported music software.
 
-this is cross platform and if two collaborators are using different software to run their projects they can still seamlessly collaborate without any hiccups.
+### Access Control
+- Projects can be **private** or **public**.
+- Shareable links to specific versions or commits.
+
+### Rollback and Compare
+- Restore any previous commit.
+- Compare two commits with:
+  - Audio playback A/B comparison.
+  - File change summary.
+  - Metadata differences (tempo, length, etc.).
+
+### Project Packaging
+- Treat projects like Git repositories with structured folders:
+/projectName
+├─ /stems
+├─ /exports
+├─ /projectFile
+└─ /readme.txt
+- Activity feed and timeline similar to Git.
+
+### DAW Integration (Future)
+- Plugins for popular DAWs to allow:
+- Committing changes directly.
+- Switching branches inside the DAW.
+
+---
+
+## Cross-Platform Collaboration
+
+Supports seamless collaboration across different DAWs and software — collaborators using different tools can work together without any hiccups.
+
+---
+
+*This system empowers music creators to manage versions, collaborate, and keep full control of their projects just like developers do with code.*
