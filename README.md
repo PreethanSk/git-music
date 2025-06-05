@@ -39,6 +39,7 @@ muse push origin main
 muse checkout -b lo-fi-remix
 muse merge lo-fi-remix
 muse tag v1.0 -m "Final mix"
+```
 
 💻 Desktop App (Coming Soon)
 
@@ -100,7 +101,7 @@ muse tag v1.0 -m "Final mix"
 
     POST /projects/:id/collaborators → Invite collaborator
 
-📎 Full API documentation available in /docs/api.md
+
 🔮 Roadmap
 
 Git-like CLI
