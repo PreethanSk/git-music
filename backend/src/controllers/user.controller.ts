@@ -80,7 +80,7 @@ const getLocalFileUrlPath = async (
   return urlPath;
 };
 
-export const uploadProfilePicture = async (req: Request, res: Response) => {
+export async function uploadProfilePicture(req: Request, res: Response) {
   if (!req.file) {
     return res.status(400).json({
       message: "No file uploaded. Please select a profile picture to upload.",
@@ -103,7 +103,7 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
       .status(500)
       .json({ message: error.message || "Server error during file upload." });
   }
-};
+}
 
 export async function userSignup(req: Request, res: Response) {
   try {
@@ -132,26 +132,26 @@ export async function userSignup(req: Request, res: Response) {
   }
 }
 
-export async function usernameCheck(req: Request, res: Response){
-    try{
-        const {username} = req.body;
-        if(!username){
-            res.status(403).json({message:"enter a username"});
-            const check = await client.user.findUnique({where: {username}});
-            if(check){
-                res.status(403).json({message:"this user already exists"});
-                return
-            }
-            else{
-                res.status(201).json({message:"this username is available"});
-                return
-            }
-        }
+export async function usernameCheck(req: Request, res: Response) {
+  try {
+    const { username } = req.body;
+    if (!username) {
+      res.status(403).json({ message: "enter a username" });
+      const check = await client.user.findUnique({ where: { username } });
+      if (check) {
+        res.status(403).json({ message: "this user already exists" });
+        return;
+      } else {
+        res.status(201).json({ message: "this username is available" });
+        return;
+      }
     }
-    catch(error){
-        console.log(error);
-        res.status(500).json({error, message:"Server crash in usernameCheck endpoint"})
-    }
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error, message: "Server crash in usernameCheck endpoint" });
+  }
 }
 
 // implement google signin singup when doing frontend
@@ -311,43 +311,61 @@ export async function dashboardCommits(req: Request, res: Response) {
   }
 }
 
-export async function updateProfile(req: Request, res: Response){
-    try{
-        //@ts-ignore
-        const id = req.id;
-        const {username, name, pfpUrl, bio } = req.body;
-        const checkUser = await client.user.findUnique({where:{username}});
-        if(checkUser){
-          res.status(403).json({message:"user already exists"});
-          return
-        }
-        await client.user.updateMany({where: {id:id}, data: {username, name, pfpUrl, bio}});
-        res.json({message:"user updated successfully"});
-        
+export async function updateProfile(req: Request, res: Response) {
+  try {
+    //@ts-ignore
+    const id = req.id;
+    const { username, name, pfpUrl, bio } = req.body;
+    const checkUser = await client.user.findUnique({ where: { username } });
+    if (checkUser) {
+      res.status(403).json({ message: "user already exists" });
+      return;
     }
-    catch(error){
-        console.log(error);
-        res.status(500).json({error, message:"server crash in update profile endpoint"})
-    }
+    await client.user.updateMany({
+      where: { id: id },
+      data: { username, name, pfpUrl, bio },
+    });
+    res.json({ message: "user updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error, message: "server crash in update profile endpoint" });
+  }
 }
 
-export async function updatePassword(req: Request, res: Response){
-  try{
+export async function updatePassword(req: Request, res: Response) {
+  try {
     //@ts-ignore
-    const id = req.id
-    const {currentPassword, newPassword} = req.body;
+    const id = req.id;
+    const { currentPassword, newPassword } = req.body;
     const passwordVerify = await bcrypt.compare(currentPassword, id.password);
-    if(!passwordVerify){
-      res.status(403).json({message:"invalid password"});
-      return
+    if (!passwordVerify) {
+      res.status(403).json({ message: "invalid password" });
+      return;
     }
     const passwordHash = await bcrypt.hash(newPassword, 10);
-    await client.user.update({where: {id}, data: {password: passwordHash}});
-    res.json({message:"password updated successfully"})
-  }
-  catch(error){
+    await client.user.update({
+      where: { id },
+      data: { password: passwordHash },
+    });
+    res.json({ message: "password updated successfully" });
+  } catch (error) {
     console.log(error);
-    res.status(500).json({error, message:"Server crash in update password"});
+    res.status(500).json({ error, message: "Server crash in update password" });
   }
 }
 
+export async function userLogout(req: Request, res: Response) {
+  try {
+    //@ts-ignore
+    const id = req.id;
+    res.clearCookie("token");
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Server crashed in logout endpoint", error });
+  }
+}

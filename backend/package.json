@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc -b && node ./dist/index.js"
+    "prisma:generate": "prisma generate",
+    "build:ts": "tsc -b",
+    "copy:prisma": "npx cpx \"src/generated/prisma/**/*\" \"dist/generated/prisma\"",
+    "dev": "npm run prisma:generate && npm run build:ts && npm run copy:prisma && node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
