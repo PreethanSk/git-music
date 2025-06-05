@@ -80,7 +80,6 @@ const getLocalFileUrlPath = async (
   return urlPath;
 };
 
-
 export const uploadProfilePicture = async (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({
@@ -106,7 +105,6 @@ export const uploadProfilePicture = async (req: Request, res: Response) => {
   }
 };
 
-
 export async function userSignup(req: Request, res: Response) {
   try {
     const { email, username, name, password, pfpUrl } = req.body;
@@ -117,7 +115,7 @@ export async function userSignup(req: Request, res: Response) {
       return;
     }
     const userCheck = await client.user.findFirst({
-      where: {OR: [ { username: username }, { email: email }]}
+      where: { OR: [{ username: username }, { email: email }] },
     });
     if (userCheck) {
       res.status(403).json({ message: "user already exists" });
@@ -134,34 +132,222 @@ export async function userSignup(req: Request, res: Response) {
   }
 }
 
-// implement google signin singup when doing frontend
-
-export async function userSignin(req: Request, res: Response){
+export async function usernameCheck(req: Request, res: Response){
     try{
-        const {email, username, password} = req.body;
-        const zodParse = userSigninSchema.safeParse(req.body);
-        if(!zodParse.success){
-            res.json({error: zodParse.error.errors});
-            return
+        const {username} = req.body;
+        if(!username){
+            res.status(403).json({message:"enter a username"});
+            const check = await client.user.findUnique({where: {username}});
+            if(check){
+                res.status(403).json({message:"this user already exists"});
+                return
+            }
+            else{
+                res.status(201).json({message:"this username is available"});
+                return
+            }
         }
-        const findUser = await client.user.findFirst({where: {OR: [{username}, {email}]}})
-        if(!findUser){
-            res.status(403).json({message:"this user does not exist"});
-            return
-        }
-        const passwordVerify = await bcrypt.compare(password, findUser.password);
-        if(!passwordVerify){
-            res.status(403).json({message:"username or password incorrect"});
-            return
-        }
-
-        const token = jwt.sign({id: findUser.id}, JWT_SECRET)
-        res.cookie("token", token, {httpOnly: true});
-        res.json({message:"signin successful"})
     }
     catch(error){
         console.log(error);
-        res.status(500).json({message:"server error", error});
+        res.status(500).json({error, message:"Server crash in usernameCheck endpoint"})
     }
+}
+
+// implement google signin singup when doing frontend
+
+export async function userSignin(req: Request, res: Response) {
+  try {
+    const { email, username, password } = req.body;
+    const zodParse = userSigninSchema.safeParse(req.body);
+    if (!zodParse.success) {
+      res.json({ error: zodParse.error.errors });
+      return;
+    }
+    const findUser = await client.user.findFirst({
+      where: { OR: [{ username }, { email }] },
+    });
+    if (!findUser) {
+      res.status(403).json({ message: "this user does not exist" });
+      return;
+    }
+    const passwordVerify = await bcrypt.compare(password, findUser.password);
+    if (!passwordVerify) {
+      res.status(403).json({ message: "username or password incorrect" });
+      return;
+    }
+
+    const token = jwt.sign({ id: findUser.id }, JWT_SECRET);
+    res.cookie("token", token, { httpOnly: true });
+    res.json({ message: "signin successful" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "server error in user signin", error });
+  }
+}
+
+export async function dashboardProfile(req: Request, res: Response) {
+  try {
+    //@ts-ignore
+    const id = req.id;
+    const profile = await client.user.findFirst({
+      where: { id: id },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        name: true,
+        pfpUrl: true,
+        createdAt: true,
+      },
+    });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.json({ profile });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error, message: "server crashed in profile page endpoint" });
+  }
+}
+
+export async function dashboardProjects(req: Request, res: Response) {
+  try {
+    //@ts-ignore
+    const id = req.id;
+    const projects = await client.project.findMany({
+      where: {
+        ownerId: id,
+        isActive: true,
+      },
+      orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
+      include: {
+        lastCommit: {
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    if (!projects.length) {
+      res.status(403).json({ message: "you dont have any projects" });
+      return;
+    }
+    res.json({ projects });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error, message: "server crashed in selfProjects endpoint" });
+  }
+}
+
+export async function dashboardCommits(req: Request, res: Response) {
+  try {
+    //@ts-ignore
+    const id = req.id;
+    const { year } = req.query;
+
+    const selectedYear = year
+      ? parseInt(year as string)
+      : new Date().getFullYear();
+
+    const startDate = new Date(selectedYear, 0, 1);
+    const endDate = new Date(selectedYear, 11, 31);
+
+    // First get all projects owned by the user
+    const userProjects = await client.project.findMany({
+      where: { ownerId: id },
+      select: { id: true },
+    });
+
+    if (!userProjects.length) {
+      return res
+        .status(404)
+        .json({ message: "No projects found for this user" });
+    }
+
+    const projectIds = userProjects.map((project) => project.id);
+
+    const commits = await client.commit.findMany({
+      where: {
+        projectId: { in: projectIds },
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        project: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!commits.length) {
+      return res
+        .status(404)
+        .json({ message: "No commits found for this year" });
+    }
+
+    res.json({ commits });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error, message: "server crashed in selfCommits endpoint" });
+  }
+}
+
+export async function updateProfile(req: Request, res: Response){
+    try{
+        //@ts-ignore
+        const id = req.id;
+        const {username, name, pfpUrl, bio } = req.body;
+        const checkUser = await client.user.findUnique({where:{username}});
+        if(checkUser){
+          res.status(403).json({message:"user already exists"});
+          return
+        }
+        await client.user.updateMany({where: {id:id}, data: {username, name, pfpUrl, bio}});
+        res.json({message:"user updated successfully"});
+        
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({error, message:"server crash in update profile endpoint"})
+    }
+}
+
+export async function updatePassword(req: Request, res: Response){
+  try{
+    //@ts-ignore
+    const id = req.id
+    const {currentPassword, newPassword} = req.body;
+    const passwordVerify = await bcrypt.compare(currentPassword, id.password);
+    if(!passwordVerify){
+      res.status(403).json({message:"invalid password"});
+      return
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await client.user.update({where: {id}, data: {password: passwordHash}});
+    res.json({message:"password updated successfully"})
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({error, message:"Server crash in update password"});
+  }
 }
 

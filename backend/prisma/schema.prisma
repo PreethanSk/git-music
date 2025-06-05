@@ -48,6 +48,11 @@ model Project {
   commits  Commit[]
   branches Branch[]
   collaborators Collaborator[]
+  pinned Boolean @default(false)
+  isActive Boolean @default(true)
+  public Boolean @default(false)
+  lastCommitId String? @unique
+  lastCommit Commit? @relation("ProjectLastCommit", fields: [lastCommitId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -69,6 +74,7 @@ model Commit{
   project Project @relation(fields: [projectId], references: [id])
   branchId String
   branch Branch @relation(fields: [branchId], references: [id])
+  projectLastCommit Project? @relation("ProjectLastCommit")
   createdAt DateTime @default(now())
 }
 
