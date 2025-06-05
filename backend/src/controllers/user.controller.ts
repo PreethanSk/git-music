@@ -137,6 +137,7 @@ export async function usernameCheck(req: Request, res: Response) {
     const { username } = req.body;
     if (!username) {
       res.status(403).json({ message: "enter a username" });
+    }
       const check = await client.user.findUnique({ where: { username } });
       if (check) {
         res.status(403).json({ message: "this user already exists" });
@@ -145,7 +146,7 @@ export async function usernameCheck(req: Request, res: Response) {
         res.status(201).json({ message: "this username is available" });
         return;
       }
-    }
+    
   } catch (error) {
     console.log(error);
     res
