@@ -1,100 +1,120 @@
-# Music Versioning System
+# 🎵 MuseHub - Git for Music Producers
 
-A **version control system for music projects**, inspired by Git, designed to manage, collaborate, and track changes in music production seamlessly.
-
----
-
-## Features
-
-### Versioning System (Git-like)
-- **Commit history:** Each commit is timestamped, hash-verified, and includes notes.
-- **Branches:** Create branches for different versions or mixes of songs.
-- **Merging:** Merge branches similar to `git merge`.
+MuseHub is a Git-inspired **version control system for music producers**, built to manage, track, and collaborate on music projects with ease. It's designed for artists, audio engineers, and producers to keep full control over their creative workflow—just like how developers use Git.
 
 ---
 
-### Command Line Interface (CLI)
-All version control operations such as commits, pushes, pulls, branching, and merging are performed through a dedicated Command Line Interface (CLI). This allows:
+## 🚀 Key Features
 
-- Precise control over your project’s version history
-- Automation and scripting capabilities for advanced workflows
-- Seamless integration with local music software and tools via CLI commands
+### 🔁 Git-Like Versioning
+- Commit system: Each version of your music project is stored as a **commit**, with timestamp, message, and metadata.
+- Branching: Create multiple branches for alternate versions, mixes, or ideas.
+- Merge requests: Collaborators can request merges which must be reviewed and approved (based on role).
+- Tagging: Tag specific commits (e.g., `v1.0`, `final_mix`, `live_version`).
+- Diffing: Compare two commits to see:
+  - Audio file changes (added/removed)
+  - Metadata changes (e.g., BPM/key/length differences)
 
-### Desktop App *(Coming Soon)*
-- Visual interface for managing version control operations
-- See what’s changed since last commit
-- Push and pull updates with a single click
-- Branch switching and commit log view
+### 🧠 Project Structure
+Each music project is structured like a repo:
 
----
+/project-name
+├── /stems
+├── /exports
+├── /projectFile
+└── readme.txt
 
-### Diffing
-- Visualize changes between commits:
-  - File additions or deletions
-  - Tempo changes (e.g., from 120 BPM to 125 BPM)
 
----
-
-### Commit History
-- Detailed log of who changed what
-- Shows commit notes and timestamps
+Supports audio previews (`.wav`, `.mp3`) and project files (Ableton, FL Studio, etc.).
 
 ---
 
-### Collaboration
-- Invite collaborators with roles:
-  - **Owner**
-  - **Editor**
-  - **Viewer**
+### 🛠 Command Line Interface (CLI)
 
----
+```bash
+muse init
+muse add drums_v2.wav
+muse commit -m "Layered extra kick"
+muse push origin main
+muse checkout -b lo-fi-remix
+muse merge lo-fi-remix
+muse tag v1.0 -m "Final mix"
 
-### Remote and Local Workflow
-- **Web UI:** Manage projects from the browser
-- **Local app (upcoming):** Automatically pull and push commits to local music software
-- One-click commits directly from within supported music software
+💻 Desktop App (Coming Soon)
 
----
+    Visual diff viewer
 
-### Access Control
-- Projects can be **private** or **public**
-- Shareable links to specific versions or commits
+    One-click commits and branching
 
----
+    Preview .wav/.mp3 changes
 
-### Rollback and Compare
-- Restore any previous commit
-- Compare two commits with:
-  - Audio playback A/B comparison
-  - File change summary
-  - Metadata differences (tempo, length, etc.)
+    Timeline of project evolution
 
----
+🔒 Role-Based Collaboration
 
-### Project Packaging
-Projects are structured like Git repositories:
+    Owner: Full access, auto-merge rights
 
-/projectName
-├─ /stems
-├─ /exports
-├─ /projectFile
-└─ /readme.txt
+    Admin: Approve merge requests
 
+    Editor: Create branches, push changes, request merges
 
-- Activity feed and timeline similar to GitHub
+    Viewer: View project, history, diffs, previews
 
----
+🔍 Profiles and Activity
 
-### DAW Integration *(Future Feature)*
-- Plugins for popular DAWs (Ableton, FL Studio, Logic, etc.)
-- Commit and pull directly from your DAW
-- Switch branches from within the DAW
+    Search by username
 
----
+    Public profiles showing active projects, commits, and tagged releases
 
-## Cross-Platform Collaboration
-Supports seamless collaboration across different DAWs and software — collaborators using different tools can work together without any hiccups.
+    Activity timeline (like GitHub feed)
 
----
+🧩 Tech Stack
 
-> 🎧 This system empowers music creators to manage versions, collaborate, and keep full control of their projects just like developers do with code.
+    Backend: Node.js + Express + Prisma + PostgreSQL
+
+    Authentication: JWT-based login (Email, Google, GitHub)
+
+    Storage: Uploaded files stored using cloud storage (e.g., S3 or similar)
+
+    Frontend: Web dashboard (WIP), CLI (Ready), Desktop App (Upcoming)
+
+📦 Core API Routes (Sample)
+
+    POST /auth/signup → Sign up user
+
+    POST /auth/login → Login user
+
+    POST /projects → Create project
+
+    POST /projects/:id/branches → Create branch
+
+    POST /projects/:id/commits → Commit changes
+
+    POST /projects/:id/merge-requests → Submit merge request
+
+    GET /projects/:id/commits/:sha/diff → View diff between commits
+
+    GET /projects/:id/files/:filename/preview → Audio preview
+
+    GET /users/:username → Public profile
+
+    POST /projects/:id/collaborators → Invite collaborator
+
+📎 Full API documentation available in /docs/api.md
+🔮 Roadmap
+
+Git-like CLI
+
+Branching, tagging, diffing
+
+Role-based access
+
+Audio previews
+
+Web dashboard
+
+Desktop app
+
+Plugin integration with DAWs
+
+Realtime collaboration
