@@ -89,11 +89,11 @@ model Collaborator{
   addedAt DateTime @default(now())
 }
 
-model Tag{
-  id String @id @default(uuid())
-  name String
-  commit Commit
-}
+// model Tag{
+//   id String @id @default(uuid())
+//   name String
+//   commit Commit
+// }
 
 enum CollaboratorRole{
   READ
